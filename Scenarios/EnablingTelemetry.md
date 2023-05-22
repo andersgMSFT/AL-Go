@@ -28,13 +28,18 @@ Here is a list of the telemetry signals for different tasks:
 | DO0078 | AL-Go action ran: ReadSecrets |
 | DO0079 | AL-Go action ran: ReadSettings |
 | DO0080 | AL-Go action ran: RunPipeline |
+| DO0081 | AL-Go action ran: Deliver |
+| DO0082 | AL-Go action ran: AnalyzeTests |
+| DO0083 | AL-Go action ran: Sign |
+| DO0084 | AL-Go action ran: DetermineArtifactUrl |
+| DO0085 | AL-Go action ran: DetermineProjectsToBuild |
 
 Here is a list of the telemetry signals for different workflows:
 
 | Event ID | Description |
 | :-- | :-- |
 | DO0090 | AL-Go workflow ran: AddExistingAppOrTestApp |
-| DO0091 | AL-Go workflow ran: CiCd |
+| DO0091 | AL-Go workflow ran: CICD |
 | DO0092 | AL-Go workflow ran: CreateApp |
 | DO0093 | AL-Go workflow ran: CreateOnlineDevelopmentEnvironment |
 | DO0094 | AL-Go workflow ran: CreateRelease |
@@ -45,6 +50,9 @@ Here is a list of the telemetry signals for different workflows:
 | DO0099 | AL-Go workflow ran: NextMajor |
 | DO0100 | AL-Go workflow ran: NextMinor |
 | DO0101 | AL-Go workflow ran: Current |
+| DO0102 | AL-Go workflow ran: CreatePerformanceTestApp |
+| DO0103 | AL-Go workflow ran: PublishToAppSource |
+| DO0104 | AL-Go workflow ran: PullRequestHandler |
 
 ---
 [back](../README.md)
