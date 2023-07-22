@@ -468,6 +468,7 @@ function ReadSettings {
         "keyVaultCertificateUrlSecretName"       = ""
         "keyVaultCertificatePasswordSecretName"  = ""
         "keyVaultClientIdSecretName"             = ""
+        "keyVaultCodesignCertificateName"        = ""
         "codeSignCertificateUrlSecretName"       = "codeSignCertificateUrl"
         "codeSignCertificatePasswordSecretName"  = "codeSignCertificatePassword"
         "additionalCountries"                    = @()
@@ -1139,7 +1140,12 @@ function CommitFromNewFolder {
     invoke-git commit --allow-empty -m "'$commitMessage'"
     if ($branch) {
         invoke-git push -u $serverUrl $branch
-        invoke-gh pr create --fill --head $branch --repo $env:GITHUB_REPOSITORY --base $ENV:GITHUB_REF_NAME
+        try {
+            invoke-gh pr create --fill --head $branch --repo $env:GITHUB_REPOSITORY --base $ENV:GITHUB_REF_NAME
+        }
+        catch {
+            OutputError("GitHub actions are not allowed to create Pull Requests (see GitHub Organization or Repository Actions Settings). You can create the PR manually by navigating to $($env:GITHUB_SERVER_URL)/$($env:GITHUB_REPOSITORY)/tree/$branch.")
+        }
     }
     else {
         invoke-git push $serverUrl
@@ -2032,4 +2038,36 @@ function Determine-ArtifactUrl {
         $artifactUrl = $artifactUrl.Replace($artifactUrl.Split('/')[4],$atArtifactUrl.Split('/')[4])
     }
     return $artifactUrl
+}
+
+function Retry-Command {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ScriptBlock]$Command,
+        [Parameter(Mandatory = $false)]
+        [int]$MaxRetries = 3,
+        [Parameter(Mandatory = $false)]
+        [int]$RetryDelaySeconds = 5
+    )
+
+    $retryCount = 0
+    while ($retryCount -lt $MaxRetries) {
+        try {
+            Invoke-Command $Command
+            if ($LASTEXITCODE -ne 0) {
+                throw "Command failed with exit code $LASTEXITCODE"
+            }
+            break
+        }
+        catch {
+            $retryCount++
+            if ($retryCount -eq $MaxRetries) {
+                throw $_
+            }
+            else {
+                Write-Host "Retrying after $RetryDelaySeconds seconds..."
+                Start-Sleep -Seconds $RetryDelaySeconds
+            }
+        }
+    }
 }
