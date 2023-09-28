@@ -235,21 +235,21 @@ try {
                     }
 
                     # Repo Setting runs-on and shell determines which GitHub runner is used for all non-build jobs (build jobs are run using the GitHubRunner/GitHubRunnerShell repo settings)
-                    # The default for runs-on is windows-latest and the default for shell is powershell
-                    # The default for GitHubRunner/GitHubRunnerShell is runs-on/shell (unless Ubuntu-latest are selected here, as build jobs cannot run on Ubuntu)
+                    # The default for runs-on is ubuntu-latest and the default for shell is pwsh
+                    # The default for GitHubRunner/GitHubRunnerShell is "runs-on"/powershell
                     # We do not change runs-on in Update AL Go System Files and Pull Request Handler workflows
-                    # These workflows will always run on windows-latest (or maybe Ubuntu-latest later) and not follow settings
+                    # These workflows will always run on ubuntu-latest and not follow settings
                     # Reasons:
                     # - Update AL-Go System files is needed for changing runs-on - by having non-functioning runners, you might dead-lock yourself
                     # - Pull Request Handler workflow for security reasons
                     if ($baseName -ne "UpdateGitHubGoSystemFiles" -and $baseName -ne "PullRequestHandler") {
-                        if ($repoSettings."runs-on" -ne "windows-latest") {
+                        if ($repoSettings."runs-on" -ne "ubuntu-latest") {
                             Write-Host "Setting runs-on to [ $($repoSettings."runs-on") ]"
-                            $yaml.ReplaceAll('runs-on: [ windows-latest ]', "runs-on: [ $($repoSettings."runs-on") ]")
+                            $yaml.ReplaceAll('runs-on: [ ubuntu-latest ]', "runs-on: [ $($repoSettings."runs-on") ]")
                         }
-                        if ($repoSettings.shell -ne "powershell") {
+                        if ($repoSettings.shell -ne "pwsh") {
                             Write-Host "Setting shell to $($repoSettings.shell)"
-                            $yaml.ReplaceAll('shell: powershell', "shell: $($repoSettings.shell)")
+                            $yaml.ReplaceAll('shell: pwsh', "shell: $($repoSettings.shell)")
                         }
                     }
 

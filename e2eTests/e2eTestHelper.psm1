@@ -416,16 +416,16 @@ function CreateAlGoRepository {
         $shell = "pwsh"
     }
 
-    if ($runson -ne "windows-latest" -or $shell -ne "powershell") {
+    if ($runson -ne "ubuntu-latest" -or $shell -ne "pwsh") {
         $repoSettings | Add-Member -MemberType NoteProperty -Name "runs-on" -Value $runson
         $repoSettings | Add-Member -MemberType NoteProperty -Name "shell" -Value $shell
         Get-ChildItem -Path '.\.github\workflows\*.yaml' | Where-Object { $_.BaseName -ne "UpdateGitHubGoSystemFiles" -and $_.BaseName -ne "PullRequestHandler" } | ForEach-Object {
             Write-Host $_.FullName
             $content = Get-ContentLF -Path $_.FullName
-            $srcPattern = "runs-on: [ windows-latest ]`n"
+            $srcPattern = "runs-on: [ ubuntu-latest ]`n"
             $replacePattern = "runs-on: [ $runson ]`n"
             $content = $content.Replace($srcPattern, $replacePattern)
-            $srcPattern = "shell: powershell`n"
+            $srcPattern = "shell: pwsh`n"
             $replacePattern = "shell: $shell`n"
             $content = $content.Replace($srcPattern, $replacePattern)
             [System.IO.File]::WriteAllText($_.FullName, $content)

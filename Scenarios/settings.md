@@ -9,13 +9,13 @@ When running a workflow or a local script, the settings are applied by reading s
 
 1.  `ALGoOrgSettings` is a **GitHub variable**, which can be defined on an **organizational level** and will apply to **all AL-Go repositories** in this organization.
 
-1.  `.github/AL-Go-settings.json` is the **repository settings file**. This settings file contains settings that are relevant for all projects in the repository. **Special note:** The repository settings file can also contains `BcContainerHelper` settings, which will be applied when loading `BcContainerHelper` in a workflow - the GitHub variables are not considered for BcContainerHelper settings. (see expert section).
+1.  `.GitHub/AL-Go-settings.json` is the **repository settings file**. This settings file contains settings that are relevant for all projects in the repository. **Special note:** The repository settings file can also contains `BcContainerHelper` settings, which will be applied when loading `BcContainerHelper` in a workflow - the GitHub variables are not considered for BcContainerHelper settings. (see expert section).
 
 1.  `ALGoRepoSettings` is a **GitHub variable**, which can be defined on an **repository level** and can contain settings that are relevant for **all projects** in the repository.
 
 1.  `.AL-Go/settings.json` is the **project settings file**. If the repository is a single project, the .AL-Go folder is in the root folder of the repository. If the repository contains multiple projects, there will be a .AL-Go folder in each project folder (like `project/.AL-Go/settings.json`)
 
-1.  `.github/<workflow>.settings.json` is the **workflow-specific settings file** for **all projects**. This option is used for the Current, NextMinor and NextMajor workflows to determine artifacts and build numbers when running these workflows.
+1.  `.GitHub/<workflow>.settings.json` is the **workflow-specific settings file** for **all projects**. This option is used for the Current, NextMinor and NextMajor workflows to determine artifacts and build numbers when running these workflows.
 
 1.  `.AL-Go/<workflow>.settings.json` is the **workflow-specific settings file** for a **specific project**.
 
@@ -42,7 +42,7 @@ When running a workflow or a local script, the settings are applied by reading s
 | <a id="obsoleteTagMinAllowedMajorMinor"></a>obsoleteTagMinAllowedMajorMinor | This setting will enable AppSource cop rule AS0105, which causes objects that are pending obsoletion with an obsolete tag version lower than the minimum set in this property are not allowed. | |
 
 ## Basic Repository settings
-The repository settings are only read from the repository settings file (.github\AL-Go-Settings.json)
+The repository settings are only read from the repository settings file (.GitHub\AL-Go-Settings.json)
 
 | Name | Description |
 | :-- | :-- |
@@ -51,16 +51,16 @@ The repository settings are only read from the repository settings file (.github
 | <a id="nextMajorSchedule"></a>nextMajorSchedule | CRON schedule for when NextMajor workflow should run. Default is no scheduled run, only manual trigger. Build your CRON string here: [https://crontab.guru](https://crontab.guru) |
 | <a id="nextMinorSchedule"></a>nextMinorSchedule | CRON schedule for when NextMinor workflow should run. Default is no scheduled run, only manual trigger. Build your CRON string here: [https://crontab.guru](https://crontab.guru) |
 | <a id="currentSchedule"></a>currentSchedule | CRON schedule for when Current workflow should run. Default is no scheduled run, only manual trigger. Build your CRON string here: [https://crontab.guru](https://crontab.guru) |
-| <a id="runs-on"></a>runs-on | Specifies which github runner will be used for all jobs in all workflows (except the Update AL-Go System Files workflow). The default is to use the GitHub hosted runner _windows-latest_. You can specify a special GitHub Runner for the build job using the GitHubRunner setting. Read [this](SelfHostedGitHubRunner.md) for more information.<br />Setting runs-on to _ubuntu-latest_ will run all non-build jobs on Linux, build jobs will still run _windows-latest_ (or whatever you have set in **githubRunner**) |
-| <a id="shell"></a>shell | Specifies which shell will be used as the default in all jobs. **powershell** is the default, which results in using _PowerShell 5.1_ (unless you selected _ubuntu-latest_, then **pwsh** is used, which results in using _PowerShell 7_) |
-| <a id="githubRunner"></a>githubRunner | Specifies which github runner will be used for the build jobs in workflows including a build job. This is the most time consuming task. By default this job uses the _Windows-latest_ github runner (unless overridden by the runs-on setting). This settings takes precedence over runs-on so that you can use different runners for the build job and the housekeeping jobs. See **runs-on** setting. |
-| <a id="githubRunnerShell"></a>githubRunnerShell | Specifies which shell is used for build jobs in workflows including a build job. The default is to use the same as defined in **shell**. If the shell setting isn't defined, **powershell** is the default, which results in using _PowerShell 5.1_. Use **pwsh** for _PowerShell 7_. |
+| <a id="runs-on"></a>runs-on | Specifies which GitHub runner will be used for all non-build jobs in all workflows (except the Update AL-Go System Files workflow). The default is to use the GitHub hosted Linux runner _ubuntu-latest_. You can specify a special GitHub Runner for the build job using the GitHubRunner setting. Read [this](SelfHostedGitHubRunner.md) for more information.<br />Default is to use _ubuntu-latest_ to use the cheaper and faster Linux runners. Setting runs-on to _windows-latest_ will run all non-build jobs on Windows |
+| <a id="shell"></a>shell | Specifies which shell will be used as the default in all jobs. **pwsh** is the default, which results in using _PowerShell 7_ (unless you set runs-on to _windows-latest_, then **powershell** is used, which results in using _PowerShell 7_) |
+| <a id="GitHubRunner"></a>GitHubRunner | Specifies which GitHub runner will be used for the build jobs in workflows including a build job. This is the most time consuming task. By default this job uses the _Windows-latest_ GitHub runner (unless overridden by the runs-on setting). This settings takes precedence over runs-on so that you can use different runners for the build job and the housekeeping jobs. See **runs-on** setting. |
+| <a id="GitHubRunnerShell"></a>GitHubRunnerShell | Specifies which shell is used for build jobs in workflows including a build job. The default is to use **powershell**, which results in using _PowerShell 5.1_. Use **pwsh** for _PowerShell 7_. |
 | <a id="environments"></a>environments | Array of logical environment names. You can specify environments in GitHub environments or in the repo settings file. If you specify environments in the settings file, you can create your AUTHCONTEXT secret using **&lt;environmentname&gt;_AUTHCONTEXT**. You can specify additional information about environments in a setting called **DeployTo&lt;environmentname&gt;** | [ ] |
 | <a id="deployto"></a>DeployTo&lt;environmentname&gt; | Structure with additional properties for the environment specified. The structure can contain the following properties:<br />**EnvironmentType** = specifies the type of environment. The environment type can be used to invoke a custom deployment. (Default SaaS)<br />**EnvironmentName** = specifies the "real" name of the environment if it differs from the GitHub environment.<br />**Branches** = an array of branch patterns, which are allowed to deploy to this environment. (Default main)<br />**Projects** = In multi-project repositories, this property can be a comma separated list of project patterns to deploy to this environment. (Default *)<br />**SyncMode** = ForceSync if deployment to this environment should happen with ForceSync, else Add. If deploying to the development endpoint you can also specify Development or Clean. (Default Add)<br />**ContinuousDeployment** = true if this environment should be used for continuous deployment, else false. (Default: AL-Go will continuously deploy to sandbox environments or environments, which doesn't end in (PROD) or (FAT)<br />**runs-on** = specifies which runner to use when deploying to this environment. (Default is settings.runs-on)<br /> | { } |
 | <a id="useProjectDependencies"></a>useProjectDependencies | Determines whether your projects are built using a multi-stage built workflow or single stage. After setting useProjectDependencies to true, you need to run Update AL-Go System Files and your workflows including a build job will change to have multiple build jobs, depending on each other. The number of build jobs will be determined by the dependency depth in your projects.<br />You can change dependencies between your projects, but if the dependency **depth** changes, AL-Go will warn you that updates for your AL-Go System Files are available and you will need to run the workflow. |
 | <a id="CICDPushBranches"></a>CICDPushBranches | CICDPushBranches can be specified as an array of branches, which triggers a CI/CD workflow on commit.<br />Default is [ "main", "release/\*", "feature/\*" ] |
 | <a id="CICDPullrequestBranches"></a>CICDPullRequestBranches | CICDPullRequestBranches can be specified as an array of branches, which triggers a CI/CD workflow on a PR.<br />Default is [ "main" ] |
-| <a id="PullRequestTrigger"></a>PullRequestTrigger | Setting for specifying the trigger AL-Go should use to trigger Pull Request Builds. By default it is set to [pull_request_target](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target) |
+| <a id="PullRequestTrigger"></a>PullRequestTrigger | Setting for specifying the trigger AL-Go should use to trigger Pull Request Builds. By default it is set to [pull_request_target](https://docs.GitHub.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target) |
 | <a id="CICDSchedule"></a>CICDSchedule | CRON schedule for when CI/CD workflow should run. Default is no scheduled run, only manually triggered or triggered by Push or Pull Request. Build your CRON string here: [https://crontab.guru](https://crontab.guru) |
 | <a id="UpdateGitHubGoSystemFilesSchedule"></a>UpdateGitHubGoSystemFilesSchedule | CRON schedule for when Update AL-Go System Files should run. When Update AL-Go System Files runs on a schedule, it uses direct COMMIT instead of creating a PR. Default is no scheduled run, only manual trigger. Build your CRON string here: [https://crontab.guru](https://crontab.guru) |
 | <a id="buildModes"></a>buildModes | A list of build modes to use when building the AL-Go projects. Every AL-Go projects will be built using each built mode. Available build modes are:<br /> **Default**: Apps are compiled as they are in the source code.<br />**Clean**: _PreprocessorSymbols_ are enabled when compiling the apps. The values for the symbols correspond to the `cleanModePreprocessorSymbols` setting of the AL-Go project.<br />**Translated**: `TranslationFile` compiler feature is enabled when compiling the apps. |
@@ -73,7 +73,7 @@ The repository settings are only read from the repository settings file (.github
 | <a id="updateDependencies"></a>updateDependencies | Setting updateDependencies to true causes AL-Go to build your app against the first compatible Business Central build and set the dependency version numbers in the app.json accordingly during build. All version numbers in the built app will be set to the version number used during compilation. | false |
 | <a id="generateDependencyArtifact"></a>generateDependencyArtifact | When this repository setting is true, CI/CD pipeline generates an artifact with the external dependencies used for building the apps in this repo. | false |
 | <a id="companyName"></a>companyName | Company name selected in the database, used for running the CI/CD workflow. Default is to use the default company in the selected Business Central localization. | |
-| <a id="versioningStrategy"></a>versioningStrategy | The versioning strategy determines how versioning is performed in this project. The version number of an app consists of 4 tuples: **Major**.**Minor**.**Build**.**Revision**. **Major** and **Minor** are read from the app.json file for each app. **Build** and **Revision** are calculated. Currently 3 versioning strategies are supported:<br />**0** = **Build** is the **github [run_number](https://go.microsoft.com/fwlink/?linkid=2217416&clcid=0x409)** for the CI/CD workflow, increased by the **runNumberOffset** setting value (if specified). **Revision** is the **github [run_attempt](https://go.microsoft.com/fwlink/?linkid=2217416&clcid=0x409)** subtracted 1.<br />**2** = **Build** is the current date  as **yyyyMMdd**. **Revision** is the current time as **hhmmss**. Date and time are always **UTC** timezone to avoid problems during daylight savings time change. Note that if two CI/CD workflows are started within the same second, this could yield to identical version numbers from two different runs.<br />**+16** use **repoVersion** setting as **appVersion** (**Major** and **Minor**) for all apps | 0 |
+| <a id="versioningStrategy"></a>versioningStrategy | The versioning strategy determines how versioning is performed in this project. The version number of an app consists of 4 tuples: **Major**.**Minor**.**Build**.**Revision**. **Major** and **Minor** are read from the app.json file for each app. **Build** and **Revision** are calculated. Currently 3 versioning strategies are supported:<br />**0** = **Build** is the **GitHub [run_number](https://go.microsoft.com/fwlink/?linkid=2217416&clcid=0x409)** for the CI/CD workflow, increased by the **runNumberOffset** setting value (if specified). **Revision** is the **GitHub [run_attempt](https://go.microsoft.com/fwlink/?linkid=2217416&clcid=0x409)** subtracted 1.<br />**2** = **Build** is the current date  as **yyyyMMdd**. **Revision** is the current time as **hhmmss**. Date and time are always **UTC** timezone to avoid problems during daylight savings time change. Note that if two CI/CD workflows are started within the same second, this could yield to identical version numbers from two different runs.<br />**+16** use **repoVersion** setting as **appVersion** (**Major** and **Minor**) for all apps | 0 |
 | <a id="additionalCountries"></a>additionalCountries | This property can be set to an additional number of countries to compile, publish and test your app against during workflows. Note that this setting can be different in NextMajor and NextMinor workflows compared to the CI/CD workflow, by specifying a different value in a workflow settings file. | [ ] |
 | <a id="keyVaultName"></a>keyVaultName | When using Azure KeyVault for the secrets used in your workflows, the KeyVault name needs to be specified in this setting if it isn't specified in the AZURE_CREDENTIALS secret. Read [this](UseAzureKeyVault.md) for more information. | |
 | <a id="licenseFileUrlSecretName"></a>licenseFileUrlSecretName | Specify the name (**NOT the secret**) of the LicenseFileUrl secret. Default is LicenseFileUrl. AL-Go for GitHub will look for a secret with this name in GitHub Secrets or Azure KeyVault to use as LicenseFileUrl. A LicenseFileUrl is required when building AppSource apps for Business Central prior to version 22. Read [this](SetupCiCdForExistingAppSourceApp.md) for more information. | LicenseFileUrl |
@@ -102,7 +102,7 @@ The repository settings are only read from the repository settings file (.github
 | <a id="assignPremiumPlan"></a>assignPremiumPlan | Setting assignPremiumPlan to true in your project setting file, causes the build container to be created with the AssignPremiumPlan set. This causes the auto-created user to have Premium Plan enabled. This setting is needed if your tests require premium plan enabled. | false |
 | <a id="enableTaskScheduler"></a>enableTaskScheduler | Setting enableTaskScheduler to true in your project setting file, causes the build container to be created with the Task Scheduler running. | false |
 | <a id="useCompilerFolder"></a>useCompilerFolder | Setting useCompilerFolder to true causes your pipelines to use containerless compiling. Unless you also set **doNotPublishApps** to true, setting useCompilerFolder to true won't give you any performance advantage, since AL-Go for GitHub will still need to create a container in order to publish and test the apps. In the future, publishing and testing will be split from building and there will be other options for getting an instance of Business Central for publishing and testing. | false |
-| <a id="excludeEnvironments"></a>excludeEnvironments | excludeEnvironments can be an array of GitHub Environments, which should be excluded from the list of environments considered for deployment. github_pages is automatically added to this array and cannot be used as environment for deployment of AL-Go for GitHub projects. | [ ] |
+| <a id="excludeEnvironments"></a>excludeEnvironments | excludeEnvironments can be an array of GitHub Environments, which should be excluded from the list of environments considered for deployment. GitHub_pages is automatically added to this array and cannot be used as environment for deployment of AL-Go for GitHub projects. | [ ] |
 
 ## AppSource specific advanced settings
 
@@ -181,7 +181,7 @@ Which will ensure that for all repositories named `bcsamples-*` in this organiza
 
 ## Custom Delivery
 
-You can override existing AL-Go Delivery functionality or you can define your own custom delivery mechanism for AL-Go for GitHub, by specifying a PowerShell script named DeliverTo*.ps1 in the .github folder. The following example will spin up a delivery job to SharePoint on CI/CD and Release.
+You can override existing AL-Go Delivery functionality or you can define your own custom delivery mechanism for AL-Go for GitHub, by specifying a PowerShell script named DeliverTo*.ps1 in the .GitHub folder. The following example will spin up a delivery job to SharePoint on CI/CD and Release.
 
 DeliverToSharePoint.ps1
 ```
@@ -202,7 +202,7 @@ Write-Host "Project settings:"
 $parameters.ProjectSettings | Out-Host
 ```
 
-**Note:** You can also override existing AL-Go for GitHub delivery functionality by creating a script called f.ex. DeliverToStorage.ps1 in the .github folder.
+**Note:** You can also override existing AL-Go for GitHub delivery functionality by creating a script called f.ex. DeliverToStorage.ps1 in the .GitHub folder.
 
 Here are the parameters to use in your custom script:
 
@@ -220,7 +220,7 @@ Here are the parameters to use in your custom script:
 
 ## Custom Deployment
 
-You can override existing AL-Go Deployment functionality or you can define your own custom deployment mechanism for AL-Go for GitHub. By specifying a PowerShell script named `DeployTo<EnvironmentType>.ps1` in the .github folder. Default Environment Type is SaaS, but you can define your own type by specifying EnvironmentType in the `DeployTo<EnvironmentName>` setting. The following example will spin up a deployment job to SharePoint on CI/CD and Publish To Environment.
+You can override existing AL-Go Deployment functionality or you can define your own custom deployment mechanism for AL-Go for GitHub. By specifying a PowerShell script named `DeployTo<EnvironmentType>.ps1` in the .GitHub folder. Default Environment Type is SaaS, but you can define your own type by specifying EnvironmentType in the `DeployTo<EnvironmentName>` setting. The following example will spin up a deployment job to SharePoint on CI/CD and Publish To Environment.
 
 DeployToMyEnvironment.ps1
 ```
@@ -234,7 +234,7 @@ Write-Host "Environment Type: $($parameters.EnvironmentType)"
 Write-Host "Environment Name: $($parameters.EnvironmentName)"
 ```
 
-**Note:** You can also create one script to override all deployment functionality, by creating a script called Deploy.ps1 in the .github folder.
+**Note:** You can also create one script to override all deployment functionality, by creating a script called Deploy.ps1 in the .GitHub folder.
 
 Here are the parameters to use in your custom script:
 
@@ -276,7 +276,7 @@ This functionality is also available in AL-Go for GitHub, by adding a file to th
 
 ## BcContainerHelper settings
 
-The repo settings file (.github\\AL-Go-Settings.json) can contain BcContainerHelper settings. Some BcContainerHelper settings are machine specific (folders and like), and should not be set in the repo settings file.
+The repo settings file (.GitHub\\AL-Go-Settings.json) can contain BcContainerHelper settings. Some BcContainerHelper settings are machine specific (folders and like), and should not be set in the repo settings file.
 
 Settings, which might be relevant to set in the settings file includes
 

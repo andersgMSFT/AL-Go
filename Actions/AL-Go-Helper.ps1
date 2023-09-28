@@ -602,7 +602,7 @@ function ReadSettings {
         "templateBranch"                                = ""
         "appDependencyProbingPaths"                     = @()
         "useProjectDependencies"                        = $false
-        "runs-on"                                       = "windows-latest"
+        "runs-on"                                       = "ubuntu-latest"
         "shell"                                         = ""
         "githubRunner"                                  = ""
         "githubRunnerShell"                             = ""
@@ -700,8 +700,8 @@ function ReadSettings {
     # gitHubRunner defaults to "runs-on", unless runs-on is Ubuntu (Linux) as this won't work.
     # gitHubRunnerShell defaults to "shell"
     #
-    # The exception for keeping gitHubRunner to Windows-Latest (when set to Ubuntu-*) will be removed when all jobs supports Ubuntu (Linux)
-    # At some point in the future (likely version 3.0), we will switch to Ubuntu (Linux) as default for "runs-on"
+    # The exception for keeping gitHubRunner to windows-latest (when set to ubuntu-*) will be removed when all jobs supports Ubuntu (Linux)
+    # At some point in the future (likely version 3.0), we will switch to ubuntu (Linux) as default for "runs-on"
     #
     if ($settings.shell -eq "") {
         if ($settings."runs-on" -like "ubuntu-*") {
@@ -720,7 +720,12 @@ function ReadSettings {
         }
     }
     if ($settings.githubRunnerShell -eq "") {
-        $settings.githubRunnerShell = $settings.shell
+        if ($settings."runs-on" -like "ubuntu-*") {
+            $settings.githubRunnerShell = "powershell"
+        }
+        else {
+            $settings.githubRunnerShell = $settings.shell
+        }
     }
     # Check that gitHubRunnerShell and Shell is valid
     if ($settings.githubRunnerShell -ne "powershell" -and $settings.githubRunnerShell -ne "pwsh") {

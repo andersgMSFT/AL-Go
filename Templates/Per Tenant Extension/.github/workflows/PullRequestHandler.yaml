@@ -27,14 +27,14 @@ env:
 jobs:
   PregateCheck:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     steps:
       - uses: microsoft/AL-Go-Actions/VerifyPRChanges@main
 
   Initialization:
     needs: [ PregateCheck ]
     if: (!failure() && !cancelled())
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
@@ -98,7 +98,7 @@ jobs:
       publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
 
   StatusCheck:
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     needs: [ Initialization, Build ]
     if: (!cancelled())
     name: Pull Request Status Check
