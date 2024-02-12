@@ -123,6 +123,7 @@ function GenerateDocsSite {
         [string] $version,
         [string[]] $allVersions,
         [hashtable] $allApps,
+        [hashtable] $allDependencies,
         [string] $repoName,
         [string] $releaseNotes,
         [string] $header,
@@ -175,11 +176,22 @@ function GenerateDocsSite {
         $newTocYml = GenerateTocYml -version $version -allVersions $allVersions -allApps $allApps -repoName $repoName -groupByProject $groupByProject
 
         # calculate apps for aldoc
-        $apps = @()
-        foreach($value in $allApps.Values) {
-            $apps += @($value)
+        $apps = @($allApps.Values | Select-Object -Unique)
+        $dependencies = @($allDependencies.Values | Select-Object -Unique)
+
+        # Get a list of unknown dependencies
+        $unknownDependencies = @()
+        Sort-AppFilesByDependencies -appFiles ($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) | Out-Null
+
+        Write-Host "Unknown dependencies:"
+        if ($unknownDependencies) {
+            $unknownDependencies | ForEach-Object { Write-Host "- $_" }
+            $missingDependencies = $unknownDependencies | ForEach-Object { $_.Split(':')[0] }
         }
-        $apps = @($apps | Select-Object -Unique)
+        else {
+            Write-Host "- None"
+            $missingDependencies = @()
+        }
 
         $arguments = @(
             "init"
