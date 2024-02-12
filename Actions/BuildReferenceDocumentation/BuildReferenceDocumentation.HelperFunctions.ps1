@@ -176,8 +176,8 @@ function GenerateDocsSite {
         $newTocYml = GenerateTocYml -version $version -allVersions $allVersions -allApps $allApps -repoName $repoName -groupByProject $groupByProject
 
         # calculate apps for aldoc
-        $apps = @($allApps.Values | Select-Object -Unique)
-        $dependencies = @($allDependencies.Values | Select-Object -Unique)
+        $apps = @($allApps.Values | ForEach-Object { $_ | ForEach-Object { $_ } } | Select-Object -Unique)
+        $dependencies = @($allDependencies.Values | ForEach-Object { $_ | ForEach-Object { $_ } } | Select-Object -Unique)
 
         Write-Host "apps:"
         $apps | ForEach-Object { Write-Host "- $_" }
@@ -192,7 +192,7 @@ function GenerateDocsSite {
         Write-Host "Unknown dependencies:"
         if ($unknownDependencies) {
             $unknownDependencies | ForEach-Object { Write-Host "- $_" }
-            $missingDependencies = $unknownDependencies | ForEach-Object { $_.Split(':')[0] }
+            $missingDependencies = @($unknownDependencies | ForEach-Object { $_.Split(':')[0] })
         }
         else {
             Write-Host "- None"
