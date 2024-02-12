@@ -179,9 +179,15 @@ function GenerateDocsSite {
         $apps = @($allApps.Values | Select-Object -Unique)
         $dependencies = @($allDependencies.Values | Select-Object -Unique)
 
+        Write-Host "apps:"
+        $apps | ForEach-Object { Write-Host "- $_" }
+
+        Write-Host "dependencies:"
+        $dependencies | ForEach-Object { Write-Host "- $_" }
+
         # Get a list of unknown dependencies
         $unknownDependencies = @()
-        Sort-AppFilesByDependencies -appFiles ($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) | Out-Null
+        Sort-AppFilesByDependencies -appFiles @($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) | Out-Null
 
         Write-Host "Unknown dependencies:"
         if ($unknownDependencies) {
