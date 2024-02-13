@@ -182,9 +182,7 @@ function GenerateDocsSite {
         $dependencies = @($allDependencies.Values | ForEach-Object { $_ | ForEach-Object { $_ } } | Select-Object -Unique)
 
         Write-Host "apps:"
-        $apps | ForEach-Object {
-            Write-Host "- $_"
-        }
+        $apps | ForEach-Object { Write-Host "- $_" }
 
         Write-Host "dependencies:"
         $dependencies | ForEach-Object { Write-Host "- $_" }
@@ -209,7 +207,7 @@ function GenerateDocsSite {
         $unknownDependencies | ForEach-Object {
             $id = $_.Split(':')[0]
             $version = $_.Split(':')[1]
-            $downloadedPackages += Download-BcNuGetPackageToFolder `
+            $downloadedPackages = Download-BcNuGetPackageToFolder `
                 -packageName $id `
                 -installedCountry $country `
                 -installedApps $installedApps `
