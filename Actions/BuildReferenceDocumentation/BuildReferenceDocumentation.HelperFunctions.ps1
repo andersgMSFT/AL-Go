@@ -356,6 +356,7 @@ function CalculateProjectsAndApps {
         }
         $allApps
     }
+    Write-Host "Country Code: '$countryCode'"
     if ($countryCode -eq 'w1') { $countryCode = '' }
     $countryCode
 }
