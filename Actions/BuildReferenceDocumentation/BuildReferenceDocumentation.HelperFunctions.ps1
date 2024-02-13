@@ -324,6 +324,9 @@ function CalculateProjectsAndApps {
                     $excludeIt = $null -ne ($excludeProjectList | Where-Object { $project -like $_ })
                     if (-not $excludeIt) {
                         $projectFolder = $project
+                        if ($projectFolder -eq "$ENV:GITHUB_REPOSITORY".Split('/')[1]) {
+                            $projectFolder = '.'
+                        }
                         if (-not $groupByProject) {
                             # use project name dummy for all apps when not using projects as folders
                             $project = 'dummy'
