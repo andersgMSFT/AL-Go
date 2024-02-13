@@ -196,24 +196,31 @@ function GenerateDocsSite {
         Write-Host "Unknown dependencies:"
         if ($unknownDependencies) {
             $unknownDependencies | ForEach-Object { Write-Host "- $_" }
-            $missingDependencies = @($unknownDependencies | ForEach-Object { $_.Split(':')[0] })
         }
         else {
             Write-Host "- None"
-            $missingDependencies = @()
         }
 
         $bcContainerHelperConfig.TrustedNuGetFeeds = @(
             [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
         )
-        $packages = Download-BcNuGetPackageToFolder `
-            -packageName "Microsoft.Application" `
-            -installedCountry 'us' `
-            -downloadDependencies all `
-            -version 20.0.0.0 `
-            -select Earliest `
-            -folder $packagesCachePath -checkLocalVersion
-        $packages | Out-Host
+        $country = 'us'
+        $installedApps = @()
+        $unknownDependencies | ForEach-Object {
+            $id = $_.Split(':')[0]
+            $version = $_.Split(':')[1]
+            $downloadedPackages += Download-BcNuGetPackageToFolder `
+                -packageName $id `
+                -installedCountry $country `
+                -installedApps $installedApps `
+                -downloadDependencies all `
+                -version $version `
+                -select Earliest `
+                -folder $packagesCachePath `
+                -checkLocalVersion
+            $downloadedPackages | Out-Host
+            $installedApps += $downloadedPackages
+        }
 
         $arguments = @(
             "init"
@@ -248,7 +255,7 @@ function GenerateDocsSite {
         Get-Content $tocYmlFile | Out-Host
 
         Get-Item (Join-Path $packagesCachePath '*.app') | Out-Host
-        
+
         $apps | ForEach-Object {
             $arguments = @(
                 "build"
