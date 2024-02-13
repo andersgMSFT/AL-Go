@@ -202,7 +202,7 @@ function GenerateDocsSite {
         $bcContainerHelperConfig.TrustedNuGetFeeds = @(
             [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
         )
-        $country = 'us'
+        $country = 'be'
         $installedApps = @()
         $unknownDependencies | ForEach-Object {
             $id = $_.Split(':')[0]
