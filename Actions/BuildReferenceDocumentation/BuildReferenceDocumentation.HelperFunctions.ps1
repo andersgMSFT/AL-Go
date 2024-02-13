@@ -133,7 +133,8 @@ function GenerateDocsSite {
         [string] $docsPath,
         [string] $logLevel,
         [switch] $groupByProject,
-        [switch] $hostIt
+        [switch] $hostIt,
+        [string] $countryCode
     )
 
     function ReplacePlaceHolders {
@@ -202,14 +203,13 @@ function GenerateDocsSite {
         $bcContainerHelperConfig.TrustedNuGetFeeds = @(
             [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
         )
-        $country = 'be'
         $installedApps = @()
         $unknownDependencies | ForEach-Object {
             $id = $_.Split(':')[0]
             $version = $_.Split(':')[1]
             $downloadedPackages = Download-BcNuGetPackageToFolder `
                 -packageName $id `
-                -installedCountry $country `
+                -installedCountry $countryCode `
                 -installedApps $installedApps `
                 -downloadDependencies all `
                 -version $version `
@@ -305,6 +305,7 @@ function CalculateProjectsAndApps {
         [switch] $groupByProject
     )
 
+    $countryCode = ''
     if ($includeProjects.Count -eq 0) { $includeProjects = @("*") }
     $projectList = @($includeProjects | ForEach-Object { $_.Replace('\','_').Replace('/','_') })
     Write-Host "Include Project Patterns"
@@ -322,6 +323,7 @@ function CalculateProjectsAndApps {
                 if ($includeIt) {
                     $excludeIt = $null -ne ($excludeProjectList | Where-Object { $project -like $_ })
                     if (-not $excludeIt) {
+                        $projectFolder = $project
                         if (-not $groupByProject) {
                             # use project name dummy for all apps when not using projects as folders
                             $project = 'dummy'
@@ -332,10 +334,25 @@ function CalculateProjectsAndApps {
                         Get-ChildItem -Path $folder.FullName -Filter '*.app' | ForEach-Object {
                             $allApps."$project" += @($_.FullName)
                         }
+                        try {
+                            $projectSettings = Get-Content -encoding utf8 -path (Join-Path $ENV:GITHUB_WORKSPACE "$projectFolder/.AL-Go/settings.json") | ConvertFrom-Json
+                            $projectCountryCode = $projectSettings.country.ToLowerInvariant()
+                            if ($countryCode -eq '') {
+                                $countryCode = $projectCountryCode
+                            }
+                            elseif ($countryCode -ne $projectCountryCode) {
+                                $countryCode = 'w1'
+                            }
+                        }
+                        catch {
+                            Write-Host "No settings.json found in $projectFolder"
+                        }
                     }
                 }
             }
         }
         $allApps
     }
+    if ($countryCode -eq 'w1') { $countryCode = '' }
+    $countryCode
 }

@@ -64,10 +64,10 @@ foreach($release in $releases) {
             DownloadRelease -token $token -projects "$($includeProjects -join ',')" -api_url $ENV:GITHUB_API_URL -repository $ENV:GITHUB_REPOSITORY -release $release -path $tempFolder -mask $mask -unpack
         }
         Get-ChildItem -Path $tempFolder -Recurse -File | ForEach-Object { Write-Host "- $($_.FullName.Substring($tempFolder.Length+1))" }
-        $allApps, $allDependencies = CalculateProjectsAndApps -tempFolder $tempFolder -includeProjects $includeProjects -excludeProjects $excludeProjects -groupByProject:$settings.alDoc.groupByProject
+        $allApps, $allDependencies,$countryCode = CalculateProjectsAndApps -tempFolder $tempFolder -includeProjects $includeProjects -excludeProjects $excludeProjects -groupByProject:$settings.alDoc.groupByProject
         $version = $release.Name
         $releaseNotes = $release.body
-        GenerateDocsSite -version $version -allVersions $versions -allApps $allApps -allDependencies $allDependencies -repoName $settings.repoName -releaseNotes $releaseNotes -header $header -footer $footer -defaultIndexMD $defaultIndexMD -defaultReleaseMD $defaultReleaseMD -docsPath $docsPath -logLevel $logLevel -groupByProject:$settings.alDoc.groupByProject
+        GenerateDocsSite -version $version -allVersions $versions -allApps $allApps -allDependencies $allDependencies -repoName $settings.repoName -releaseNotes $releaseNotes -header $header -footer $footer -defaultIndexMD $defaultIndexMD -defaultReleaseMD $defaultReleaseMD -docsPath $docsPath -logLevel $logLevel -groupByProject:$settings.alDoc.groupByProject -countryCode $countryCode
         do {
             try {
                 $retry = $false
@@ -94,7 +94,7 @@ foreach($version in $versions) {
 Write-Host "::group::Main"
 
 Get-ChildItem -Path $artifactsFolder -Depth 1 -File | ForEach-Object { Write-Host "- $($_.FullName.Substring($artifactsFolder.Length))" }
-$allApps, $allDependencies = CalculateProjectsAndApps -tempFolder $artifactsFolder -includeProjects $includeProjects -excludeProjects $excludeProjects -groupByProject:$settings.alDoc.groupByProject
+$allApps, $allDependencies,$countryCode = CalculateProjectsAndApps -tempFolder $artifactsFolder -includeProjects $includeProjects -excludeProjects $excludeProjects -groupByProject:$settings.alDoc.groupByProject
 $releaseNotes = ''
 if ($latestReleaseTag) {
     try {
@@ -107,7 +107,7 @@ if ($latestReleaseTag) {
 else {
     $releaseNotes = ''
 }
-GenerateDocsSite -version '' -allVersions $versions -allApps $allApps -allDependencies $allDependencies -repoName $settings.repoName -releaseNotes $releaseNotes -header $header -footer $footer -defaultIndexMD $defaultIndexMD -defaultReleaseMD $defaultReleaseMD -docsPath $docsPath -logLevel $logLevel -groupByProject:$settings.alDoc.groupByProject
+GenerateDocsSite -version '' -allVersions $versions -allApps $allApps -allDependencies $allDependencies -repoName $settings.repoName -releaseNotes $releaseNotes -header $header -footer $footer -defaultIndexMD $defaultIndexMD -defaultReleaseMD $defaultReleaseMD -docsPath $docsPath -logLevel $logLevel -groupByProject:$settings.alDoc.groupByProject -countryCode $countryCode
 
 Write-Host "::endgroup::"
 
