@@ -247,6 +247,8 @@ function GenerateDocsSite {
         Write-Host "TOC:"
         Get-Content $tocYmlFile | Out-Host
 
+        Get-Item (Join-Path $packagesCachePath '*.app') | Out-Host
+        
         $apps | ForEach-Object {
             $arguments = @(
                 "build"
