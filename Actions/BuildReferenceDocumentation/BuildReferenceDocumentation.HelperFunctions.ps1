@@ -187,7 +187,7 @@ function GenerateDocsSite {
 
         # Get a list of unknown dependencies
         $unknownDependencies = @()
-        Sort-AppFilesByDependencies -appFiles @($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) | Out-Null
+        Sort-AppFilesByDependencies -appFiles @($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) | Out-Host
 
         Write-Host "Unknown dependencies:"
         if ($unknownDependencies) {
