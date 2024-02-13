@@ -170,7 +170,9 @@ function GenerateDocsSite {
 
     $alDocPath = DownloadAlDoc
     $docfxPath = Join-Path ([System.IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
+    $packagesCachePath = Join-Path ([System.IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
     New-Item -Path $docfxPath -ItemType Directory | Out-Null
+    New-Item -Path $packagesCachePath -ItemType Directory | Out-Null
     try {
         # Generate new toc.yml with releases and apps
         $newTocYml = GenerateTocYml -version $version -allVersions $allVersions -allApps $allApps -repoName $repoName -groupByProject $groupByProject
@@ -180,14 +182,16 @@ function GenerateDocsSite {
         $dependencies = @($allDependencies.Values | ForEach-Object { $_ | ForEach-Object { $_ } } | Select-Object -Unique)
 
         Write-Host "apps:"
-        $apps | ForEach-Object { Write-Host "- $_" }
+        $apps | ForEach-Object {
+            Write-Host "- $_"
+        }
 
         Write-Host "dependencies:"
         $dependencies | ForEach-Object { Write-Host "- $_" }
 
         # Get a list of unknown dependencies
         $unknownDependencies = @()
-        Sort-AppFilesByDependencies -appFiles @($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) | Out-Host
+        Sort-AppFilesByDependencies -appFiles @($apps+$dependencies) -WarningAction SilentlyContinue -unknownDependencies ([ref]$unknownDependencies) -includeSystemDependencies -includeDependencyVersion | Out-Host
 
         Write-Host "Unknown dependencies:"
         if ($unknownDependencies) {
@@ -198,6 +202,18 @@ function GenerateDocsSite {
             Write-Host "- None"
             $missingDependencies = @()
         }
+
+        $bcContainerHelperConfig.TrustedNuGetFeeds = @(
+            [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
+        )
+        $packages = Download-BcNuGetPackageToFolder `
+            -packageName "Microsoft.Application" `
+            -installedCountry 'de' `
+            -downloadDependencies all `
+            -version 20.0.0.0 `
+            -select Earliest `
+            -folder $folder -checkLocalVersion
+        $packages | Out-Host
 
         $arguments = @(
             "init"
@@ -265,6 +281,7 @@ function GenerateDocsSite {
     }
     finally {
         Remove-Item -Path $docfxPath -Recurse -Force
+        Remove-Item -Path $packagesCachePath -Recurse -Force
     }
 }
 
