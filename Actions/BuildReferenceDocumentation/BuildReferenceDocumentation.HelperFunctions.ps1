@@ -208,11 +208,11 @@ function GenerateDocsSite {
         )
         $packages = Download-BcNuGetPackageToFolder `
             -packageName "Microsoft.Application" `
-            -installedCountry 'de' `
+            -installedCountry 'us' `
             -downloadDependencies all `
             -version 20.0.0.0 `
             -select Earliest `
-            -folder $folder -checkLocalVersion
+            -folder $packagesCachePath -checkLocalVersion
         $packages | Out-Host
 
         $arguments = @(
@@ -252,6 +252,7 @@ function GenerateDocsSite {
                 "build"
                 "--output ""$docfxpath"""
                 "--loglevel $loglevel"
+                "--packagecache ""$packagesCachePath"""
                 "--source ""$_"""
                 )
             Write-Host "invoke aldoc $arguments"
