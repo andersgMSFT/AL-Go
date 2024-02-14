@@ -34,11 +34,19 @@ jobs:
         with:
           shell: powershell
           eventId: "DO0097"
-        
+
       - name: Read settings
         uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           shell: powershell
+
+      - name: Read secrets
+        id: ReadSecrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
+        with:
+          shell: powershell
+          gitHubSecrets: ${{ toJson(secrets) }}
+          getSecrets: 'GitHubPackagesContext'
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
@@ -56,6 +64,8 @@ jobs:
         
       - name: Build Reference Documentation
         uses: microsoft/AL-Go-Actions/BuildReferenceDocumentation@main
+        env:
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: powershell
           artifacts: 'latest'

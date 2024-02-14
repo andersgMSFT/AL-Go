@@ -10,6 +10,21 @@
 DownloadAndImportBcContainerHelper
 
 $settings = $env:Settings | ConvertFrom-Json
+$secrets = $env:Secrets | ConvertFrom-Json | ConvertTo-HashTable
+$gitHubPackagesContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($secrets.gitHubPackagesContext))
+
+# Trust Microsoft's public symbols feed
+$bcContainerHelperConfig.TrustedNuGetFeeds = @(
+    [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
+)
+# Trust GitHubPackages feed
+if ($gitHubPackagesContext) {
+    $gitHubPackagesCredential = $gitHubPackagesContext | ConvertFrom-Json
+    $bcContainerHelperConfig.TrustedNuGetFeeds += @(
+        [PSCustomObject]@{ "url" = $gitHubPackagesCredential.serverUrl; "token" = $gitHubPackagesCredential.token }
+    )
+}
+
 $includeProjects = $settings.alDoc.includeProjects
 $excludeProjects = $settings.alDoc.excludeProjects
 $maxReleases = $settings.alDoc.maxReleases

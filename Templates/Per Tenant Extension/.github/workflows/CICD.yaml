@@ -184,12 +184,22 @@ jobs:
         with:
           shell: powershell
 
+      - name: Read secrets
+        id: ReadSecrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
+        with:
+          shell: powershell
+          gitHubSecrets: ${{ toJson(secrets) }}
+          getSecrets: 'GitHubPackagesContext'
+
       - name: Setup Pages
         if: needs.Initialization.outputs.deployALDocArtifact == 1
         uses: actions/configure-pages@v4
 
       - name: Build Reference Documentation
         uses: microsoft/AL-Go-Actions/BuildReferenceDocumentation@main
+        env:
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: powershell
           artifacts: '.artifacts'

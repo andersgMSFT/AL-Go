@@ -200,9 +200,6 @@ function GenerateDocsSite {
             Write-Host "- None"
         }
 
-        $bcContainerHelperConfig.TrustedNuGetFeeds = @(
-            [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
-        )
         $installedApps = @()
         $unknownDependencies | ForEach-Object {
             $id = $_.Split(':')[0]
@@ -344,6 +341,7 @@ function CalculateProjectsAndApps {
                                 $countryCode = $projectCountryCode
                             }
                             elseif ($countryCode -ne $projectCountryCode) {
+                                Write-Host "Country code for project $projectFolder is different from previous projects, using w1"
                                 $countryCode = 'w1'
                             }
                         }
