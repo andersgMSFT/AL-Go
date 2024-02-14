@@ -13,10 +13,6 @@ $settings = $env:Settings | ConvertFrom-Json
 $secrets = $env:Secrets | ConvertFrom-Json | ConvertTo-HashTable
 $gitHubPackagesContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($secrets.gitHubPackagesContext))
 
-# Trust Microsoft's public symbols feed
-$bcContainerHelperConfig.TrustedNuGetFeeds = @(
-    [PSCustomObject]@{ "url" = $bcContainerHelperConfig.MSSymbolsNuGetFeedUrl }
-)
 # Trust GitHubPackages feed
 if ($gitHubPackagesContext) {
     $gitHubPackagesCredential = $gitHubPackagesContext | ConvertFrom-Json
@@ -24,6 +20,10 @@ if ($gitHubPackagesContext) {
         [PSCustomObject]@{ "url" = $gitHubPackagesCredential.serverUrl; "token" = $gitHubPackagesCredential.token }
     )
 }
+# Trust Microsoft's public symbols feed
+$bcContainerHelperConfig.TrustedNuGetFeeds += @(
+    [PSCustomObject]@{ "url" = $bcContainerHelperConfig.MSSymbolsNuGetFeedUrl }
+)
 
 $includeProjects = $settings.alDoc.includeProjects
 $excludeProjects = $settings.alDoc.excludeProjects
