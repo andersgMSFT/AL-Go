@@ -249,7 +249,10 @@ function GenerateDocsSite {
         Write-Host "TOC:"
         Get-Content $tocYmlFile | Out-Host
 
-        Get-Item (Join-Path $packagesCachePath '*.app') | Out-Host
+        Write-Host "Apps in package cache:"
+        Get-Item (Join-Path $packagesCachePath '*.app') | ForEach-Object {
+            Write-Host "- $($_.Name)"
+        }
 
         $apps | ForEach-Object {
             $arguments = @(
