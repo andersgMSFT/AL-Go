@@ -15,7 +15,7 @@ $gitHubPackagesContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]
 
 # Trust Microsoft's public symbols feed
 $bcContainerHelperConfig.TrustedNuGetFeeds = @(
-    [PSCustomObject]@{ "url" = "https://dynamicssmb2.pkgs.visualstudio.com/DynamicsBCPublicFeeds/_packaging/MSApps/nuget/v3/index.json" }
+    [PSCustomObject]@{ "url" = $bcContainerHelperConfig.MSSymbolsNuGetFeedUrl }
 )
 # Trust GitHubPackages feed
 if ($gitHubPackagesContext) {
