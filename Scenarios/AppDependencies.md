@@ -1,6 +1,6 @@
 # 14. Introducing a dependency to an app on GitHub
 
-If your app has a dependency to another application on a different GitHub repository, the foreign repository can be added to the dependency probing paths (appDependencyProbingPaths) in the AL-Go settings file. The dependency must also be added to the `app.json` file as a dependency. During a build all the apps mentioned in the probing paths will be downloaded and installed on the tenant.
+If your app has a dependency to another application on a different GitHub repository, the foreign repository can be added to the dependency probing paths (appDependencyProbingPaths) in the AL-Go settings file. The dependency must also be added to the `app.json` file as a dependency. During a build all the apps mentioned in the probing paths will be downloaded and installed in the build container.
 
 The `appDependencyProbingPaths` key in the settings expects a json array with the following structure:
 
@@ -25,6 +25,10 @@ The `appDependencyProbingPaths` key in the settings expects a json array with th
 **authTokenSecret** If the foreign repository is private, to download the artifacts an access token is needed. In this case a secret should be added to GitHub secrets or Azure Key vault and the name of the secret should be provided in the settings.
 
 **projects** specifies the project in a multi project repository. “\*” means all projects.
+
+> [!NOTE]
+> If you want to include these dependencies during deployment of your app to a Business Central environment, you need to add a project setting called `generateDependencyArtifact` and set it to true. See [this](https://aka.ms/algosettings#generateDependencyArtifact).
+
 
 ---
 [back](../README.md)
